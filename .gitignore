@@ -1,0 +1,8 @@
+AWS/
+figs/
+MWK/
+VK/
+out/
+misc/
+**/.DS_Store
+**/__pycache__/
