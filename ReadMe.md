@@ -19,8 +19,8 @@
 
 **GlacierData_Plots2.py:**  
 + reads and plots data as downloaded from pangaea (note: minor changes to the data files to fix typos/errors)  
-+ MWK data: https://doi.pangaea.de/10.1594/PANGAEA.806662 (for bulk download, use option "Download ZIP file containing all datasets as tab-delimited text")  
-+ VK data: https://doi.pangaea.de/10.1594/PANGAEA.833232 (for bulk download, use option "Download ZIP file containing all datasets as tab-delimited text")
++ MWK data: https://doi.pangaea.de/10.1594/PANGAEA.806662 (Stocker-Waldhuber et al. (2016). For bulk download, use option "Download ZIP file containing all datasets as tab-delimited text")  
++ VK data: https://doi.pangaea.de/10.1594/PANGAEA.833232 (Seiser and Fischer (2016). For bulk download, use option "Download ZIP file containing all datasets as tab-delimited text")
 + makes figure for cumulative MB (glacier wider summer, winter, annual) for both glaciers (fig 11)
 + makes figure with subplots for each year showing MB parameters and ELA in elevations zones (horizontal bar plots, fig 12)
 
