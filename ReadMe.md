@@ -1,5 +1,6 @@
-# Code to process MWK and VK data files (glacier and meteo data)
+# Code to process MWK and VK data files (glacier and meteo data)  
 
+Requires the folowwing directories to be present in the same directory as the .py files: "out", "figs", "AWS". Additional file paths to input data need to be set in the scripts, see comments therein.
 
 ## GLACIER data:      
 **ProcessExcl.py:**  
