@@ -1,6 +1,8 @@
 # Code to process MWK and VK data files (glacier and meteo data)  
 
-Requires the folowwing directories to be present in the same directory as the .py files: "out", "figs", "AWS". Additional file paths to input data need to be set in the scripts, see comments therein.
+This repo is related to glaciological and meteorological data from Mullwitzkees (MWK) and Venedigerkees (VK), two glaciers in the Hohe Tauern range of the Austrian Alps. New data is being added to existing publication series on the PANGAEA data platform and an accompanying publication has been submitted to Earth System Science Data (Copernicus publications).
+
+The scripts require the folowing directories to be present in the same directory as the .py files: "out", "figs", "AWS". Additional file paths to input data need to be set in the scripts, see comments therein.
 
 ## GLACIER data:      
 **ProcessExcl.py:**  
