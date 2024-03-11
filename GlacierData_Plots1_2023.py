@@ -19,7 +19,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 # script to read files with point MB data - files previously produced in ProcessEcxel.py
 # and ProcessShapefiles.py and make plots
 
-glaciers = ['VK', 'MWK']
+glaciers = ['VK']#, 'MWK']
 
 # read the data tables for intermediate and annual point data:
 def readFiles(fn, glac):
@@ -62,7 +62,7 @@ def day_of_water_year(some_date):
 
 
 
-probesVK = readProbes('VK'+'/'+'VK'+'_probeData.csv', 'VK')
+probesVK = readProbes('VK'+'/'+'VK'+'_probeData_2023.csv', 'VK')
 probesMWK = readProbes('MWK'+'/'+'MWK'+'_probeData.csv', 'MWK')
 
 an = []
@@ -72,9 +72,9 @@ inter = []
 
 for g in glaciers:
     # make filepaths
-    fn_mb_annual = g+'/'+g+'_annual_pits_stakes_fixeddate.csv'
-    fn_mb_inter = g+'/'+g+'_intermediate_pits_stakes.csv'
-    fn_mw_winter = g+'/'+g+'_winter_pits_fixeddate.csv'
+    fn_mb_annual = g+'/'+g+'_annual_pits_stakes_fixeddate_2023.csv'
+    fn_mb_inter = g+'/'+g+'_intermediate_pits_stakes_2023.csv'
+    fn_mw_winter = g+'/'+g+'_winter_pits_fixeddate_2023.csv'
     # fn_mb_inter_cumul = g+'/'+g+'_intermediate_stakes_cumul.csv'
     
     #read files
@@ -195,7 +195,7 @@ def getOutlines2(glac, an):
     fig, ax = plt.subplots(1, 1, figsize=(8, 8), sharey=True, sharex=True)
 
     if glac == 'VK':
-        yrs = np.arange(2012, 2023)
+        yrs = np.arange(2012, 2024)
         df['year'] = df['fname'].str[-8:-4]
         df['year'] = df['year'].astype(int)
 
@@ -270,7 +270,7 @@ def getOutlines2(glac, an):
     if glac == 'MWK':
         fig.legend(handles=handles, loc='upper left', bbox_to_anchor=(0.1, 0.5), ncol=2)
 
-    fig.savefig('figs/'+glac+'_outlines_and_annualdata.png', dpi=200, bbox_inches='tight')
+    fig.savefig('figs/'+glac+'_outlines_and_annualdata_2023.png', dpi=200, bbox_inches='tight')
 
 
 # FIG 4
@@ -280,7 +280,7 @@ def intermediate_v_annual(gdf, an, winter, ax):
     cl = ['grey', 'k']
     pts = []
 
-    for i, g in enumerate(['VK', 'MWK']):
+    for i, g in enumerate(['VK']):#, 'MWK']):
         stakes = gdf.loc[(gdf['measurement_type']==1) & (gdf['glacier']==g)]
         stakes['fixeddate'] = pd.to_datetime(stakes['year'].astype(str) + '0930', format='%Y%m%d')
         stakes['difFloating'] = (stakes['date1'] - stakes['fixeddate']).dt.days
@@ -385,7 +385,7 @@ def intermediate_stats_combined(gdf, an, winter):
     fig, ax = plt.subplot_mosaic([['a)', 'a)'], ['b)', 'c)']],layout='constrained', figsize=(12, 8))
     cl = ['grey', 'k']
 
-    for i, g in enumerate(['VK', 'MWK']):
+    for i, g in enumerate(['VK']):#, 'MWK']):
         stakes = gdf.loc[(gdf['measurement_type']==1) & (gdf['glacier']==g)]
         stakes['fixeddate'] = pd.to_datetime(stakes['year'].astype(str) + '0930', format='%Y%m%d')
         stakes['difFloating'] = (stakes['date1'] - stakes['fixeddate']).dt.days
@@ -448,12 +448,12 @@ def intermediate_stats_combined(gdf, an, winter):
     ax['c)'].annotate('c)', xy=(0.1, 0.9), xycoords='axes fraction', color='k', fontweight='bold')
 
     
-    fig.savefig('figs/combinedPlot_intermediate.png', bbox_inches='tight', dpi=150)
+    fig.savefig('figs/combinedPlot_intermediate_2023.png', bbox_inches='tight', dpi=150)
 
    
-# FIG 5: Sumulative seasonal ablation at three example stakes
+# FIG 5: Cumulative seasonal ablation at three example stakes
 def plot_intermediate(gdf):
-    yrs = np.arange(2007, 2023)
+    yrs = np.arange(2007, 2024)
 
     gdf['doy'] = gdf['date1'].dt.dayofyear
     gdf['wday'] = gdf.date1.apply(day_of_water_year)
@@ -528,7 +528,7 @@ def plot_intermediate(gdf):
     ax[2].annotate('c)', xy=(0.02, 0.9), xycoords='axes fraction', color='k', fontweight='bold')
 
     fig.legend(handles=pts, loc='lower left', bbox_to_anchor=(0.9, 0.3))
-    fig.savefig('figs/StakesIntermediate_seasonal.png', bbox_inches='tight', dpi=150)
+    fig.savefig('figs/StakesIntermediate_seasonal_2023.png', bbox_inches='tight', dpi=150)
 
 
 # FIG 6: MB vs elevation, winter & annual
@@ -536,7 +536,7 @@ def plot_annual_seasonal_elevation(winter, an, probesVK, probesMWK):
 
     fig, ax = plt.subplots(2, 2, figsize=(10, 12), sharey=True)
     ax = ax.flatten()
-    yrs = np.arange(2007, 2023)
+    yrs = np.arange(2007, 2024)
     clrs = cm.plasma(np.linspace(0, 0.9, len(yrs)))
     lns = []
 
@@ -568,7 +568,7 @@ def plot_annual_seasonal_elevation(winter, an, probesVK, probesMWK):
     ax[1].grid('both')
     ax[1].set_title('Winter point mass balance, VK')
 
-    for j, y in enumerate(yrs):
+    for j, y in enumerate(yrs[:-1]):
         temp = an.loc[(an['year'] == y) & (an['glacier'] == 'MWK')]
         ax[2].scatter(temp.mb_we, temp.z_pos, color=clrs[j], s=28, edgecolor='k', linewidth=0.2, zorder=2)
         ax[2].errorbar(temp.mb_we, temp.z_pos, xerr=temp.mb_error, linestyle="None", color='k', linewidth=0.4, zorder=1)
@@ -609,7 +609,7 @@ def plot_annual_seasonal_elevation(winter, an, probesVK, probesMWK):
     ax[3].annotate('d)', xy=(0.02, 0.9), xycoords='axes fraction', color='k', fontweight='bold')
 
     fig.legend(handles=lns, loc='lower left', bbox_to_anchor=(0.9, 0.2))
-    fig.savefig('figs/annual_seasonal_elevation.png', bbox_inches='tight', dpi=200)
+    fig.savefig('figs/annual_seasonal_elevation_2023.png', bbox_inches='tight', dpi=200)
 
 # # -----------------------------------------------------------
 # # FIGURES
@@ -617,9 +617,9 @@ def plot_annual_seasonal_elevation(winter, an, probesVK, probesMWK):
 # overview()
 
 # FIG 2, FIG 3 - all available outlines and location of annual point balance measurements, colored by years
-getOutlines2('MWK', an)
+# getOutlines2('MWK', an)
 getOutlines2('VK', an)
-stop
+
 # FIG 4 - three subplots showing intermediate data and uncertainties)
 # uncomment print statements to print number of stake readings and spring and fall pits, as well as stats for difference fixed to floating date
 intermediate_stats_combined(inter, an, winter)

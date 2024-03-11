@@ -85,6 +85,8 @@ def uncertainties(df, datatype):
     # mb error = squ(reading error^2 + density error^2) CHECK ABOUT THIS - does reading error need to be squared again?
     df['mb_error'] = np.sqrt(df['reading_error']**2 + df['density_error']**2)
 
+    df['mb_raw'] = df['mb_raw'].round(1)
+    df['mb_we'] = df['mb_we'].round(1)
     df['mb_error'] = df['mb_error'].round(1)
     df['reading_error'] = df['reading_error'].round(1)
     df['density_error'] = df['density_error'].round(1)
