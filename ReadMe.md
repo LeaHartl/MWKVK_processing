@@ -5,6 +5,14 @@ This repo is related to glaciological and meteorological data from Mullwitzkees 
 The scripts require the folowing directories to be present in the same directory as the .py files: "out", "figs", "AWS". Additional file paths to input data need to be set in the scripts, see comments therein.
 
 ## GLACIER data:      
+**MB_pangaeadata.py**       
++ loops through the folders with the .tab files of point mass balance data for annual, intermediate, winter, and probing data as downloaded from pangaea
++ loops through each file to remove the header     
++ loads and merges the data			
++ passes the data to the plotting functions in **GlacierData_Plots1.py:**    
++ makes Figs 4, 5, and 6.
+
+
 **ProcessExcl.py:**  
 + Reads point mass balance stake data in excel files for VK and MWK (supplied by Bernd Seiser & Martin Stocker-Waldhuber for Vk and MWK, respectively).    
 + Calls **Uncertainty.py** for uncertainty computation of point data followig approach described in Geibel et al (2022)  

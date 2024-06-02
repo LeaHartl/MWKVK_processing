@@ -451,7 +451,7 @@ def intermediate_stats_combined(gdf, an, winter):
     fig.savefig('figs/combinedPlot_intermediate.png', bbox_inches='tight', dpi=150)
 
    
-# FIG 5: Sumulative seasonal ablation at three example stakes
+# FIG 5: Cumulative seasonal ablation at three example stakes
 def plot_intermediate(gdf):
     yrs = np.arange(2007, 2023)
 
@@ -469,14 +469,18 @@ def plot_intermediate(gdf):
     for i, y in enumerate(yrs):
         tmp = gdf.loc[(gdf['year']==y)]
         stkMWK = tmp.loc[(tmp['name'] == '11') & (tmp.glacier=='MWK')]
-
+        stkMWK = stkMWK.sort_values(by=['date1'])
         stkMWK['mb_we_cu'] = stkMWK['mb_we'].cumsum()
-        # print(stkMWK.z_pos.max())
+
+        # print(stkMWK[['date1', 'year','name', 'doy', 'mb_we_cu']])
         # print(stkMWK.z_pos.min())
 
         if y < 2021:
             lowVK = tmp.loc[(tmp['name'] == '95') & (tmp.glacier=='VK')]
             highVK = tmp.loc[(tmp['name'] == '100') & (tmp.glacier=='VK')]
+
+            lowVK = lowVK.sort_values(by=['date1'])
+            highVK = highVK.sort_values(by=['date1'])
 
             lowVK['mb_we_cu'] = lowVK['mb_we'].cumsum()
             highVK['mb_we_cu'] = highVK['mb_we'].cumsum()
@@ -489,6 +493,9 @@ def plot_intermediate(gdf):
         if y > 2021:
             lowVK = tmp.loc[(tmp['name'] == 'VEK-6') & (tmp.glacier=='VK')]
             highVK = tmp.loc[(tmp['name'] == 'VEK-18') & (tmp.glacier=='VK')]
+
+            lowVK = lowVK.sort_values(by=['date1'])
+            highVK = highVK.sort_values(by=['date1'])
 
             lowVK['mb_we_cu'] = lowVK['mb_we'].cumsum()
             highVK['mb_we_cu'] = highVK['mb_we'].cumsum()
@@ -616,20 +623,20 @@ def plot_annual_seasonal_elevation(winter, an, probesVK, probesMWK):
 # FIG 1 - overview map (this takes a while because it loads a basemap tile for the background image)
 # overview()
 
-# FIG 2, FIG 3 - all available outlines and location of annual point balance measurements, colored by years
-getOutlines2('MWK', an)
-getOutlines2('VK', an)
-stop
-# FIG 4 - three subplots showing intermediate data and uncertainties)
-# uncomment print statements to print number of stake readings and spring and fall pits, as well as stats for difference fixed to floating date
-intermediate_stats_combined(inter, an, winter)
+# # FIG 2, FIG 3 - all available outlines and location of annual point balance measurements, colored by years
+# getOutlines2('MWK', an)
+# getOutlines2('VK', an)
 
-# FIG 5 - plot subseasonal intermediate cumulative stake data for 3 stakes (3 subplots)
-plot_intermediate(inter)
+# # FIG 4 - three subplots showing intermediate data and uncertainties)
+# # uncomment print statements to print number of stake readings and spring and fall pits, as well as stats for difference fixed to floating date
+# intermediate_stats_combined(inter, an, winter)
 
-# FIG 6 - annual and winter point mb vs elevation:
-plot_annual_seasonal_elevation(winter, an, probesVK, probesMWK)
+# # FIG 5 - plot subseasonal intermediate cumulative stake data for 3 stakes (3 subplots)
+# plot_intermediate(inter)
+
+# # # FIG 6 - annual and winter point mb vs elevation:
+# # plot_annual_seasonal_elevation(winter, an, probesVK, probesMWK)
 
 
-plt.show()
+# plt.show()
 

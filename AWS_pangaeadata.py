@@ -1,4 +1,3 @@
-# ! /usr/bin/env python3
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,15 +9,15 @@ import AWS_plots_helpers as AWSplots
 # supress copy warning - careful 
 pd.options.mode.chained_assignment = None  # default='warn'
 
-# MWK data set:
+# MWK AWS data set:
 # https://doi.pangaea.de/10.1594/PANGAEA.965646
-# VK data set: 
+# VK AWS data set:
 # https://doi.pangaea.de/10.1594/PANGAEA.965647
 # --> Download a zip file of all data sets in the collection and unpack the zip file. 
 
 # set the file paths to the unpacked .tab files:
 folder_MWK = 'pangaea_dl/MWK_meteorology/datasets/'
-folder_VK =  'pangaea_dl/VK_meteorology/datasets/'
+folder_VK = 'pangaea_dl/VK_meteorology/datasets/'
 
 # load the quality controlled data from the yearly files:
 def loadfiles(folder, gl):
