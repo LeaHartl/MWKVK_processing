@@ -4,14 +4,12 @@ import matplotlib.pyplot as plt
 import datetime
 
 from matplotlib import cm
-import seaborn as seaborn
 from matplotlib.colors import ListedColormap
 import matplotlib.dates as mdates
 from matplotlib.lines import Line2D
 import matplotlib.patches as mpatches
 
 from windrose import WindroseAxes, plot_windrose
-import seaborn as sns
 import scipy.stats as stats
 from scipy.stats import circmean
 
@@ -172,8 +170,8 @@ def PDD(df1, df2):
         df_daily = df.resample('D').mean()
         df_daily['doy'] = df_daily.index.dayofyear
         # set pdd column
-        df_daily['pdd'] = 0
-        df_daily['pdd'].loc[df_daily[param]>0] = df_daily[param].loc[df_daily[param]>0]
+        df_daily['pdd'] = 0.0
+        df_daily['pdd'].loc[df_daily[param]>0.0] = df_daily[param].loc[df_daily[param]>0.0]
         # cumsum, restart every year
         df_daily['cpdd'] = df_daily.groupby(df_daily.index.year)['pdd'].cumsum()
 

@@ -62,7 +62,9 @@ for flag in flagsVK:
 # time series of station POR:
 month_T_MWK = AWSplots.timeseriesplot(MWK_proc, 'MWK')
 month_T_VK = AWSplots.timeseriesplot(VK_proc, 'VK')
+plt.show()
 
+stop
 # PDD plot:
 AWSplots.PDD(MWK_proc, VK_proc)
 

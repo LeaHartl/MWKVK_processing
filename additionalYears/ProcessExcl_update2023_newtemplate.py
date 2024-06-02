@@ -394,28 +394,79 @@ def makeTablePits(fname, tabletype, season, gl):
 
 def writetofile(dat, what, gl, forheader, y):
     if what == 'annual':
-        header1 = '# Mass Balance; '+forheader+' annual fixed date'
-        fn = gl+'/'+gl+'_annual_pits_stakes_fixeddate_'+y+'.csv'
+        # header1 = '# Mass Balance; '+forheader+' annual fixed date'
+        fn = 'outnew/Vorlage_'+gl+'_MB_annual_'+y+'.csv'
+        fnex = 'outnew/Vorlage_'+gl+'_MB_annual_'+y
     if what == 'seasonal':
-        header1 = '# Mass Balance; '+forheader+' winter fixed date'
-        fn = gl+'/'+gl+'_winter_pits_fixeddate_'+y+'.csv'
+        # header1 = '# Mass Balance; '+forheader+' winter fixed date'
+        fn = 'outnew/Vorlage_'+gl+'_MB_winter_'+y+'.csv'
+        fnex = 'outnew/Vorlage_'+gl+'_MB_winter_'+y
     if what == 'period':
-        header1 = '# Mass Balance; '+forheader+' intermediate'
-        fn = gl+'/'+gl+'_intermediate_pits_stakes_'+y+'.csv'
-    if what == 'cumul':
-        header1 = '# Mass Balance; '+forheader+' intermediate'
-        fn = gl+'/'+gl+'_intermediate_stakes_cumul_'+y+'.csv'
+        # header1 = '# Mass Balance; '+forheader+' intermediate'
+        fn = 'outnew/Vorlage_'+gl+'_MB_intermediate_'+y+'.csv'
+        fnex = 'outnew/Vorlage_'+gl+'_MB_intermediate_'+y
 
-    header2 = '# name; date0; time0; date1; time1; period; date_quality; x_pos ; y_pos ; z_pos ; position_quality; mb_raw ; density ;  density_quality ; mb_we ; measurement_quality ; measurement_type ; mb_error ; reading_error ; density_error ; source'
-    header3 = '# (-);  (yyyymmdd); (hhmm) ; (yyyymmdd); (hhmm) ; (d) ; (#) ; (m) ; (m) ; (m a.s.l.) ; (#) ; (cm) ; (kg m-3) ; (#) ; (mm w.e.) ; (#) ; (#) ; (mm w.e.) ; (mm w.e.) ; (mm w.e.) ; (-)'
-    header4 = '# IGF / OEAW; production-date 20231108 ; reference ; http://www.mountainresearch.at'
+    print(dat.head())
 
-    with open(fn, 'a') as file:
-        file.write(header1+'\n')
-        file.write(header2+'\n')
-        file.write(header3+'\n')
-        file.write(header4+'\n')
-        dat.to_csv(file, header=False, index=False, sep='\t')
+    dat['Date/Time (begin of period)'] = dat['date0'].astype(str)+ ' ' +dat['time0'].astype(str)
+    dat['Date/Time (begin of period)'] = pd.to_datetime(dat['Date/Time (begin of period)'],errors='coerce')
+
+    dat['Date/Time (begin of period)'] = dat['Date/Time (begin of period)'].dt.strftime('%Y-%m-%dT%H:%M')
+
+
+    dat['Date/Time (end of period)'] = dat['date1'].astype(str)+ ' ' +dat['time1'].astype(str)
+    dat['Date/Time (end of period)'] = pd.to_datetime(dat['Date/Time (end of period)'], errors='coerce')
+    dat = dat.loc[dat['Date/Time (end of period)'].dt.year == int(y)]
+    dat['Date/Time (end of period)'] = dat['Date/Time (end of period)'].dt.strftime('%Y-%m-%dT%H:%M')
+    print(dat.tail())
+    
+
+    dat = dat.rename(columns={"name": 'Name (stake, sounding, probing)', "period": "Duration [days] (period length)", "source":"Observer"})
+    dat = dat.rename(columns={"x_pos": "x [m] (x-position of stake, EPSG:31255)", "y_pos": "y [m] (y-position of stake, EPSG:31255)", "z_pos":"z [m] (elevation of stake)"})
+    dat = dat.rename(columns={"date_quality": "QF date (quality identifier for date)", "position_quality": "QF pos (quality identifier for position)", "density":"Dens snow/firn/ice [kg/m**3]"})
+    dat = dat.rename(columns={"density_quality": "QF rho (quality identifier for density)", "position_quality": "QF pos (quality identifier for position)", "density":"Dens snow/firn/ice [kg/m**3]"})
+    dat = dat.rename(columns={"mb_we": "MB point [mm w.e./kg/m**2]", "measurement_quality": "QF measurement (quality identifier for stake ...)", "measurement_type'":"Measurement type (type of mass balance observation)"})
+    dat = dat.rename(columns={"mb_error": "MB point unc [mm w.e.] (Uncertainty of point mass bal...)", "reading_error": "Reading unc [mm w.e.] (Reading uncertainty of point ...)", "density_error":"Density unc [mm w.e.] (Density uncertainty of point ...)"})
+    dat = dat.rename(columns={"mb_raw": "MB raw [cm] (raw mass balance measurement)"})
+    
+
+    dat = dat.drop(['date0', 'time0', 'date1', 'time1'], axis=1)
+    dat = dat[['Name (stake, sounding, probing)', 'Date/Time (begin of period)', 'Date/Time (end of period)',
+       'Duration [days] (period length)',
+       'QF date (quality identifier for date)',
+       'x [m] (x-position of stake, EPSG:31255)',
+       'y [m] (y-position of stake, EPSG:31255)', 'z [m] (elevation of stake)',
+       'QF pos (quality identifier for position)', 
+       'MB raw [cm] (raw mass balance measurement)',
+       'Dens snow/firn/ice [kg/m**3]',
+       'QF rho (quality identifier for density)', 'MB point [mm w.e./kg/m**2]',
+       'QF measurement (quality identifier for stake ...)', 'measurement_type',
+       'MB point unc [mm w.e.] (Uncertainty of point mass bal...)',
+       'Reading unc [mm w.e.] (Reading uncertainty of point ...)',
+       'Density unc [mm w.e.] (Density uncertainty of point ...)', 'Observer',
+       ]]
+    #dat.index=dat["Name (stake, sounding, probing)"]
+    print(dat.head())
+
+    dat.to_csv(fn, index=False)
+    dat.to_excel(fnex+'.xlsx', index = False)
+
+    #stop
+
+
+
+
+
+    # header2 = '# name; date0; time0; date1; time1; period; date_quality; x_pos ; y_pos ; z_pos ; position_quality; mb_raw ; density ;  density_quality ; mb_we ; measurement_quality ; measurement_type ; mb_error ; reading_error ; density_error ; source'
+    # header3 = '# (-);  (yyyymmdd); (hhmm) ; (yyyymmdd); (hhmm) ; (d) ; (#) ; (m) ; (m) ; (m a.s.l.) ; (#) ; (cm) ; (kg m-3) ; (#) ; (mm w.e.) ; (#) ; (#) ; (mm w.e.) ; (mm w.e.) ; (mm w.e.) ; (-)'
+    # header4 = '# IGF / OEAW; production-date 20231108 ; reference ; http://www.mountainresearch.at'
+
+    # with open(fn, 'a') as file:
+    #     file.write(header1+'\n')
+    #     file.write(header2+'\n')
+    #     file.write(header3+'\n')
+    #     file.write(header4+'\n')
+    #     dat.to_csv(file, header=False, index=False, sep='\t')
 
 
 
@@ -432,14 +483,14 @@ fnameVK = 'VK/Pegeldaten_gesammelt_v5_2023.xlsx'
 fpitsVK = 'VK/Schachtdaten-gesammelt_VEK_LH_2023.xlsx'
 # -----------
 # MWK:
-yrsMWK = np.arange(2007, 2023)
-fnameMWK = 'MWK/Pegel_v3_LH.xlsx'
+yrsMWK = np.arange(2007, 2024)
+fnameMWK = 'MWK/Pegel_v3_LH_2023.xlsx'
 # manually fixed date format in excel file (if two days, alway used second date)
-fpitsMWK = 'MWK/Schaechte_LH.xlsx'
+fpitsMWK = 'MWK/Schaechte_LH_2023.xlsx'
 # -----------
 
 # call functions for both glaciers:
-for gl in ['VK']:#, 'MWK']:
+for gl in ['VK', 'MWK']:
 
     if gl == 'VK':
         fpits = fpitsVK
@@ -490,9 +541,10 @@ for gl in ['VK']:#, 'MWK']:
 
 
     writetofile(data_annual_u, 'annual', gl, forheader, '2023')
+
     writetofile(data_winter_u, 'seasonal', gl, forheader, '2023')
     writetofile(data_int_u, 'period', gl, forheader, '2023')
-    writetofile(stks_int_cu, 'cumul', gl, forheader, '2023')
+    # writetofile(stks_int_cu, 'cumul', gl, forheader, '2023')
 
 
 

@@ -54,6 +54,7 @@ def ProcessProbes(glac, df, df_p, an, winter, what):
         shp = shp.rename(columns={"WW_1": "Wert"})
         shp = shp.rename(columns={"WW1": "Wert"})
         shp = shp.rename(columns={"Abl": "Wert"})
+        shp = shp.rename(columns={"mb": "Wert"})
 
         shp = shp.rename(columns={"Hoehe": "z_pos"})
         shp = shp.rename(columns={"HStufe": "z_pos"})
@@ -171,9 +172,9 @@ def MakeMapsSubplots(glac, df, df_p, an, winter, cmap, vmin, vmax, what):
         row = 4
         col = 3
     if glac == 'MWK':
-        yrs = np.arange(2007, 2023)
-        row = 4
-        col = 4
+        yrs = np.arange(2007, 2024)
+        row = 3
+        col = 6
 
     fig, ax = plt.subplots(row, col, figsize=(8, 8), sharey=True, sharex=True)
     ax = ax.flatten()
@@ -191,10 +192,14 @@ def MakeMapsSubplots(glac, df, df_p, an, winter, cmap, vmin, vmax, what):
         shp = shp.rename(columns={"WW_1": "Wert"})
         shp = shp.rename(columns={"WW1": "Wert"})
         shp = shp.rename(columns={"Abl": "Wert"})
+        shp = shp.rename(columns={"mb": "Wert"})
 
         if what == 'annual':
-
+            
             shp.Wert = shp.Wert.astype('float')*10
+            if (glac == 'MWK') & (y == 2023):
+                shp.Wert = shp.Wert.astype('float')/10
+            
             shp.plot(ax=ax[i], column='Wert', alpha=1, cmap=cmap, norm=divnorm, legend=False, zorder=8)#, norm=norm_w)# zorder=i+1
 
             an_stk = an.loc[(an.glacier == glac) & (an.year == y) & (an['measurement_type'] == 1)]
@@ -218,7 +223,7 @@ def MakeMapsSubplots(glac, df, df_p, an, winter, cmap, vmin, vmax, what):
             bounds_w = np.arange(0, 2400, 200)
             norm_w = mcolors.BoundaryNorm(boundaries=bounds_w, ncolors=256, extend='both')
 
-            if (glac == 'MWK') & (y > 2007):
+            if (glac == 'MWK') & (y > 2007) & (y < 2023):
                 shp.Wert = shp.Wert.astype('float')*10
 
             shp.Wert = shp.Wert.astype('float')
@@ -234,6 +239,7 @@ def MakeMapsSubplots(glac, df, df_p, an, winter, cmap, vmin, vmax, what):
             prb = prb.rename(columns={"Akk": "Wert"})
             prb = prb.rename(columns={"Sondierung": "Wert"})
             prb = prb.rename(columns={"WWSondieru": "Wert"})
+            prb = prb.rename(columns={"mb": "Wert"})
             prb.Wert = pd.to_numeric(prb.Wert, errors='coerce')
 
             win = winter.loc[(winter.glacier == glac) & (winter.year == y)]
@@ -273,14 +279,16 @@ def MakeMapsSubplots(glac, df, df_p, an, winter, cmap, vmin, vmax, what):
                 a.tick_params(axis='both', labelsize=8)
 
         if glac == 'MWK':   
+            ax[-6].set_xlabel('m')
+            ax[-5].set_xlabel('m')
             ax[-4].set_xlabel('m')
             ax[-3].set_xlabel('m')
             ax[-2].set_xlabel('m')
             ax[-1].set_xlabel('m')
             ax[0].set_ylabel('m')
-            ax[4].set_ylabel('m')
-            ax[8].set_ylabel('m')
+            ax[6].set_ylabel('m')
             ax[12].set_ylabel('m')
+            # ax[12].set_ylabel('m')
 
         if glac == 'VK':   
             ax[9].set_xlabel('m')
@@ -290,8 +298,8 @@ def MakeMapsSubplots(glac, df, df_p, an, winter, cmap, vmin, vmax, what):
             ax[6].set_ylabel('m')
             ax[9].set_ylabel('m')
                 
-        # if glac == 'VK':
-        #     ax[-1].set_axis_off()
+        if glac == 'MWK':
+            ax[-1].set_axis_off()
 
     fig.savefig('figs/'+glac+'_'+what+'_maps_subplots_2023.png', dpi=200, bbox_inches='tight')
     print('fig saved')
@@ -406,22 +414,60 @@ def loadShapes(glac, an, winter):
 
 
 def writetofile(dat, gl, y):
+    print('hier',dat)
 
-    fn = gl+'/'+gl+'_probeData_'+y+'.csv'
-    header1 = '# Snow depth probing; fixed date'
-    header2 = '# name; date0; time0; date1; time1; period; date_quality; x_pos ; y_pos ; z_pos ; position_quality; mb_raw ; density ;  density_quality ; mb_we ; measurement_quality ; measurement_type ; mb_error ; reading_error ; density_error ; source; probe_flag'
-    header3 = '# (-);  (yyyymmdd); (hhmm) ; (yyyymmdd); (hhmm) ; (d) ; (#) ; (m) ; (m) ; (m a.s.l.) ; (#) ; (cm) ; (kg m-3) ; (#) ; (mm w.e.) ; (#) ; (#) ; (mm w.e.) ; (mm w.e.) ; (mm w.e.) ; (-) ; (-)'
-    header4 = '# IGF / OEAW; production-date 20231108 ; reference ; http://www.mountainresearch.at'
+    fn = 'outnew/Vorlage_'+gl+'_MB_probing_'+y+'.csv'
+    fnex = 'outnew/Vorlage_'+gl+'_MB_probing_'+y
 
-    with open(fn, 'a') as file:
-        file.write(header1+'\n')
-        file.write(header2+'\n')
-        file.write(header3+'\n')
-        file.write(header4+'\n')
-        dat.to_csv(file, header=False, index=False, sep='\t')
+    print(dat.head())
+
+    dat['Date/Time (begin of period)'] = 'NaN'#dat['date0'].astype(str)+ ' ' +dat['time0'].astype(str)
 
 
-glaciers = ['VK']#, 'MWK']
+    dat['Date/Time (end of period)'] = dat['date1'].astype(str)
+    dat['Date/Time (end of period)'] = pd.to_datetime(dat['Date/Time (end of period)'], errors='coerce')
+    dat = dat.loc[dat['Date/Time (end of period)'].dt.year == int(y)]
+    dat['Date/Time (end of period)'] = dat['Date/Time (end of period)'].dt.strftime('%Y-%m-%dT%12:%00')
+    print(dat.tail())
+    
+
+    dat = dat.rename(columns={"name": 'Name (stake, sounding, probing)', "period": "Duration [days] (period length)", "source":"Observer"})
+    dat = dat.rename(columns={"x_pos": "x [m] (x-position of stake, EPSG:31255)", "y_pos": "y [m] (y-position of stake, EPSG:31255)", "z_pos":"z [m] (elevation of stake)"})
+    dat = dat.rename(columns={"date_quality": "QF date (quality identifier for date)", "position_quality": "QF pos (quality identifier for position)", "density":"Dens snow/firn/ice [kg/m**3]"})
+    dat = dat.rename(columns={"density_quality": "QF rho (quality identifier for density)", "position_quality": "QF pos (quality identifier for position)", "density":"Dens snow/firn/ice [kg/m**3]"})
+    dat = dat.rename(columns={"mb_we": "MB point [mm w.e./kg/m**2]", "measurement_quality": "QF measurement (quality identifier for stake ...)", "measurement_type'":"Measurement type (type of mass balance observation)"})
+    dat = dat.rename(columns={"mb_error": "MB point unc [mm w.e.] (Uncertainty of point mass bal...)", "reading_error": "Reading unc [mm w.e.] (Reading uncertainty of point ...)", "density_error":"Density unc [mm w.e.] (Density uncertainty of point ...)"})
+    dat = dat.rename(columns={"mb_raw": "MB raw [cm] (raw mass balance measurement)"})
+    print(dat)
+    
+    dat = dat.rename(columns={"probe_flag": "QF (Flag to indicate whether the ...)"})
+
+    
+
+    dat = dat.drop(['date0', 'time0', 'date1', 'time1'], axis=1)
+    dat = dat[['Name (stake, sounding, probing)', 'Date/Time (begin of period)', 'Date/Time (end of period)',
+       'Duration [days] (period length)',
+       'QF date (quality identifier for date)',
+       'x [m] (x-position of stake, EPSG:31255)',
+       'y [m] (y-position of stake, EPSG:31255)', 'z [m] (elevation of stake)',
+       'QF pos (quality identifier for position)', 
+       'MB raw [cm] (raw mass balance measurement)',
+       'Dens snow/firn/ice [kg/m**3]',
+       'QF rho (quality identifier for density)', 'MB point [mm w.e./kg/m**2]',
+       'QF measurement (quality identifier for stake ...)', 'measurement_type',
+       'MB point unc [mm w.e.] (Uncertainty of point mass bal...)',
+       'Reading unc [mm w.e.] (Reading uncertainty of point ...)',
+       'Density unc [mm w.e.] (Density uncertainty of point ...)', 'Observer',
+       'QF (Flag to indicate whether the ...)']]
+    #dat.index=dat["Name (stake, sounding, probing)"]
+    print(dat.head())
+
+    dat.to_csv(fn, index=False)
+    dat.to_excel(fnex+'.xlsx', index = False)
+
+
+
+glaciers = ['VK', 'MWK']
 
 an = []
 winter = []
@@ -447,5 +493,5 @@ winter = pd.concat(winter)
 
 # run all the subroutines
 loadShapes('VK', an, winter)
-# loadShapes('MWK', an, winter)
+loadShapes('MWK', an, winter)
 

@@ -1,0 +1,5 @@
+Name (stake, sounding, probing);Date/Time (begin of period);Date/Time (end of period);Duration [days] (period length);QF date (quality identifier for date);x [m] (x-position of stake, EPSG:31255);y [m] (y-position of stake, EPSG:31255);z [m] (elevation of stake);QF pos (quality identifier for position);MB raw [cm] (raw mass balance measurement);Dens snow/firn/ice [kg/m**3];QF rho (quality identifier for density);MB point [mm w.e./kg/m**2];QF measurement (quality identifier for stake ...);measurement_type;MB point unc [mm w.e.] (Uncertainty of point mass bal...);Reading unc [mm w.e.] (Reading uncertainty of point ...);Density unc [mm w.e.] (Density uncertainty of point ...);Observer
+FS1;2022-10-01T12:00;2023-05-01T12:00;212;1;-72690,3532;216890,4639;3135,46;2;;360;3;1309;5;2;317,9;300,2;104,7;MWS
+FS2;2022-10-01T12:00;2023-05-01T12:00;212;1;-71845,45745;216998,6741;3231,37;2;;360;3;1255;5;2;316,5;300,2;100,4;MWS
+FS3;2022-10-01T12:00;2023-05-01T12:00;212;1;-72838,59731;217568,9851;3316,76;2;;367;3;795;5;2;306,8;300,2;63,6;MWS
+FS4;2022-10-01T12:00;2023-05-01T12:00;212;1;-72518,49228;215693,9625;2793,14;2;;342;3;443;5;2;302,3;300,2;35,4;MWS

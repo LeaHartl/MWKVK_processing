@@ -30,7 +30,15 @@ The scripts require the folowing directories to be present in the same directory
 
 
 ## METEO: 
-Code to format and plot AWS data from AWS_VK and AWS_MWK (weather stations Keeskogel Südgrat and Defreggerhaus)    
+Code to load the data files as downloaded from pangaea:				
+**AWS_pangaeadata.py**       
++ loops through the folder with the .tab files    
++ loops through each file to remove the header     
++ loads and merges the data for all years 			
++ passes the data to the plotting functions in **AWS_plots_helpers.py**   
+
+
+Code used to do the initial formating and QC of the AWS data from AWS_VK and AWS_MWK (weather stations Keeskogel Südgrat and Defreggerhaus)    
 **AWS_processing.py**  
 + loads data files, concatenates if needed (data loaded from directory "AWS")
 + applies quality flags 

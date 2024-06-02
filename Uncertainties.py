@@ -64,7 +64,7 @@ def uncertainties(df, datatype):
     df['date_unc'] = df['date_quality'].map(q_date)
     # if quality flag is 3 (start date unknown - relevant for winter data)
     # AND location is below 2500m, uncertainty = 36cm
-    df['date_unc'].loc[(df['date_quality'] == 3) & (df['z_pos'] < 2500)] = 360
+    df['date_unc'].loc[(df['date_quality'].astype(int) == 3) & (df['z_pos'].astype(float) < 2500)] = 360
     # if quality flag is 3 AND location is between 2500 and 3000, uncertainty = 31cm
     df['date_unc'].loc[(df['date_quality'] == 3) & (df['z_pos'] >= 2500) & (df['z_pos'] < 3000)] = 310
     # if quality flag is 3 AND location is between 3000 and 3500, uncerrtainty = 22cm

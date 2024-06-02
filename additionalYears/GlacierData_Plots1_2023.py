@@ -19,7 +19,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 # script to read files with point MB data - files previously produced in ProcessEcxel.py
 # and ProcessShapefiles.py and make plots
 
-glaciers = ['VK']#, 'MWK']
+glaciers = ['VK', 'MWK']
 
 # read the data tables for intermediate and annual point data:
 def readFiles(fn, glac):
@@ -63,7 +63,7 @@ def day_of_water_year(some_date):
 
 
 probesVK = readProbes('VK'+'/'+'VK'+'_probeData_2023.csv', 'VK')
-probesMWK = readProbes('MWK'+'/'+'MWK'+'_probeData.csv', 'MWK')
+probesMWK = readProbes('MWK'+'/'+'MWK'+'_probeData_2023.csv', 'MWK')
 
 an = []
 winter = []
@@ -204,7 +204,7 @@ def getOutlines2(glac, an):
         ax.set_xlim([-77900, -74450])
 
     if glac == 'MWK':
-        yrs = np.arange(2007, 2023)
+        yrs = np.arange(2007, 2024)
         df['year'] = df['fname'].str[17:-4]
         df['year'].replace('LIA', '1850', inplace=True)
         df['year'] = df['year'].astype(int)
@@ -280,7 +280,7 @@ def intermediate_v_annual(gdf, an, winter, ax):
     cl = ['grey', 'k']
     pts = []
 
-    for i, g in enumerate(['VK']):#, 'MWK']):
+    for i, g in enumerate(['VK', 'MWK']):
         stakes = gdf.loc[(gdf['measurement_type']==1) & (gdf['glacier']==g)]
         stakes['fixeddate'] = pd.to_datetime(stakes['year'].astype(str) + '0930', format='%Y%m%d')
         stakes['difFloating'] = (stakes['date1'] - stakes['fixeddate']).dt.days
@@ -385,7 +385,7 @@ def intermediate_stats_combined(gdf, an, winter):
     fig, ax = plt.subplot_mosaic([['a)', 'a)'], ['b)', 'c)']],layout='constrained', figsize=(12, 8))
     cl = ['grey', 'k']
 
-    for i, g in enumerate(['VK']):#, 'MWK']):
+    for i, g in enumerate(['VK', 'MWK']):
         stakes = gdf.loc[(gdf['measurement_type']==1) & (gdf['glacier']==g)]
         stakes['fixeddate'] = pd.to_datetime(stakes['year'].astype(str) + '0930', format='%Y%m%d')
         stakes['difFloating'] = (stakes['date1'] - stakes['fixeddate']).dt.days
@@ -617,8 +617,8 @@ def plot_annual_seasonal_elevation(winter, an, probesVK, probesMWK):
 # overview()
 
 # FIG 2, FIG 3 - all available outlines and location of annual point balance measurements, colored by years
-# getOutlines2('MWK', an)
-getOutlines2('VK', an)
+getOutlines2('MWK', an)
+#getOutlines2('VK', an)
 
 # FIG 4 - three subplots showing intermediate data and uncertainties)
 # uncomment print statements to print number of stake readings and spring and fall pits, as well as stats for difference fixed to floating date
