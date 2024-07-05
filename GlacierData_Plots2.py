@@ -205,8 +205,97 @@ def ElevZones():
 
 
 
-ElevZones()
-MB_bars3panels()
+# FIG 12, 13 - subplots  of winter, summer, annual balance for each year, as horizontal bar plots
+def ElevZones_v2(gl):
+    # yrsMWK = np.arange(2007, 2023, 1)
+    # yrsVK = np.arange(2012, 2023, 1)
+    if gl == 'MWK':
+        rows = 4
+        cols = 4
+        yrs = np.arange(2007, 2023, 1)
+        xl = [-6100, 2500]
+        yl = [2600, 3500]
+    if gl == 'VK':
+        rows = 3
+        cols = 4
+        yrs = np.arange(2012, 2023, 1)
+        xl = [-6100, 2500]
+        yl = [2300, 3500]
+    fig, ax = plt.subplots(rows, cols, sharex=True, sharey=True, figsize=(12, 8))
+    ax = ax.flatten()
+    for a in ax:
+        a.set_xlim(xl)
+        a.set_ylim(yl)
+
+    if gl == 'MWK':
+        ax[0].set_ylabel('elevation (m)')
+        ax[4].set_ylabel('elevation (m)')
+        ax[8].set_ylabel('elevation (m)')
+        ax[12].set_ylabel('elevation (m)')
+        ax[12].set_xlabel('b (mm w.e.)')
+        ax[13].set_xlabel('b (mm w.e.)')
+        ax[14].set_xlabel('b (mm w.e.)')
+        ax[15].set_xlabel('b (mm w.e.)')
+
+    if gl == 'VK':
+        ax[0].set_ylabel('elevation (m)')
+        ax[4].set_ylabel('elevation (m)')
+        ax[8].set_ylabel('elevation (m)')
+        ax[8].set_xlabel('b (mm w.e.)')
+        ax[9].set_xlabel('b (mm w.e.)')
+        ax[10].set_xlabel('b (mm w.e.)')
+        ax[-1].set_axis_off()
+
+    highMWK = []
+    highVK = []
+    for i, yr in enumerate(yrs):
+        tmp = readFiles_elevation(gl, yr)
+        tmp['elev'] = (tmp['Elev max [m a.s.l.]'] + tmp['Elev min [m a.s.l.]']) / 2
+        highM = tmp.loc[tmp.elev >= 3200]['baZ [kg/m**2]'].sum()
+        # highMWK.append(highM)
+        ax[i].barh(tmp.elev, tmp['bwaZ [kg/m**2]'], align='center', height=50, color='blue', alpha=0.8)
+        ax[i].barh(tmp.elev, tmp['bsaZ [kg/m**2]'], align='center', height=50, color='red', alpha=0.8)
+        ax[i].barh(tmp.elev, tmp['baZ [kg/m**2]'], align='center', height=50, color='silver', alpha=0.8)
+        ax[i].vlines(0, 2400, 3500, colors='k')
+        
+        ax[i].set_title(str(yr))
+        ax[i].grid(axis='both', which='both', zorder=1)
+
+        tmp2 = readFiles_massbalance(gl, yr)
+        ax[i].hlines(tmp2['ELA [m a.s.l.]'].astype(float), -6100, 2500, linestyle='-', color='k', linewidth=0.8)
+
+        # if yr in yrsVK:
+        #     tmpVK = readFiles_elevation('VK', yr)
+        #     tmpVK['elev'] = (tmpVK['Elev max [m a.s.l.]'] + tmpVK['Elev min [m a.s.l.]']) / 2
+        #     highV = tmpVK.loc[tmpVK.elev >= 3200]['baZ [kg/m**2]'].sum()
+        #     highVK.append(highV)
+        #     ax[i].step(tmpVK['baZ [kg/m**2]'], tmpVK.elev, color='slategrey', where='mid', linestyle='-')
+        #     ax[i].step(tmpVK['bsaZ [kg/m**2]'], tmpVK.elev, color='darkred', where='mid', linestyle='-')
+        #     ax[i].step(tmpVK['bwaZ [kg/m**2]'], tmpVK.elev, color='darkblue', where='mid', linestyle='-')
+
+        #     tmp2VK = readFiles_massbalance('VK', yr)
+        #     ax[i].hlines(tmp2VK['ELA [m a.s.l.]'].astype(float), -6100, 2500, linestyle='--', color='k', linewidth=0.8)
+
+    # create manual symbols for legend
+    patch = mpatches.Patch(color='silver', label='annual')
+    patch_w = mpatches.Patch(color='blue', label='winter')
+    patch_s = mpatches.Patch(color='red', label='summer')     
+    line = Line2D([0], [0], label='ELA', color='k', linewidth=0.8)
+
+    # add manual symbols to auto legend
+    handles = ([patch, patch_w, patch_s, line])
+
+    fig.legend(handles=handles, loc='center right', bbox_to_anchor=(1.05, 0.5))
+    fig.savefig('figs/elevationzones_'+gl+'.png', bbox_inches='tight', dpi=300)
+
+
+
+
+# ElevZones()
+ElevZones_v2('VK')
+ElevZones_v2('MWK')
+
+# MB_bars3panels()
 
 
 plt.show()

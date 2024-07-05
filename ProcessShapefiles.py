@@ -178,7 +178,7 @@ def MakeMapsSubplots(glac, df, df_p, an, winter, cmap, vmin, vmax, what):
     fig, ax = plt.subplots(row, col, figsize=(8, 8), sharey=True, sharex=True)
     ax = ax.flatten()
 
-    for i, y in enumerate(df['year'].values):
+    for i, y in enumerate(yrs):#df['year'].values):
         ax[i].set_title(str(y))
 
         f = df['fname'].loc[df['year']==y].values[0]
@@ -246,7 +246,7 @@ def MakeMapsSubplots(glac, df, df_p, an, winter, cmap, vmin, vmax, what):
 
             shp.plot(ax=ax[i], column='Wert', alpha=1, cmap=cmap, legend=False, norm=norm_w)# zorder=i+1)
 
-            prb.plot(ax=ax[i], column='Wert', alpha=1, markersize=2, linewidth=0.1, edgecolor='k',
+            prb.plot(ax=ax[i], column='Wert', alpha=1, markersize=4, linewidth=0.1, edgecolor='k',
                      cmap=cmap, legend=False, norm=norm_w)# zorder=i+1)
 
             win.plot(ax=ax[i], column='mb_we', alpha=1, edgecolor='k', linewidth=0.5, marker='s',
@@ -273,22 +273,22 @@ def MakeMapsSubplots(glac, df, df_p, an, winter, cmap, vmin, vmax, what):
                 a.tick_params(axis='both', labelsize=8)
 
         if glac == 'MWK':   
-            ax[-4].set_xlabel('m')
-            ax[-3].set_xlabel('m')
-            ax[-2].set_xlabel('m')
-            ax[-1].set_xlabel('m')
-            ax[0].set_ylabel('m')
-            ax[4].set_ylabel('m')
-            ax[8].set_ylabel('m')
-            ax[12].set_ylabel('m')
+            ax[-4].set_xlabel('meters')
+            ax[-3].set_xlabel('meters')
+            ax[-2].set_xlabel('meters')
+            ax[-1].set_xlabel('meters')
+            ax[0].set_ylabel('meters')
+            ax[4].set_ylabel('meters')
+            ax[8].set_ylabel('meters')
+            ax[12].set_ylabel('meters')
 
         if glac == 'VK':   
-            ax[9].set_xlabel('m')
-            ax[10].set_xlabel('m')
-            ax[0].set_ylabel('m')
-            ax[3].set_ylabel('m')
-            ax[6].set_ylabel('m')
-            ax[9].set_ylabel('m')
+            ax[9].set_xlabel('meters')
+            ax[10].set_xlabel('meters')
+            ax[0].set_ylabel('meters')
+            ax[3].set_ylabel('meters')
+            ax[6].set_ylabel('meters')
+            ax[9].set_ylabel('meters')
                 
         if glac == 'VK':
             ax[-1].set_axis_off()
@@ -394,10 +394,11 @@ def loadShapes(glac, an, winter):
     if glac=='MWK':
         prbsAll['source'] = 'MSW'
     # probes with uncertainties:
-    prbsAll_u = unc.uncertainties(prbsAll, 'probe')
+    #prbsAll_u = unc.uncertainties(prbsAll, 'probe')
 
     # prbsAll_u.to_csv(glac+'/'+glac+'_probeData1.csv')
-    writetofile(prbsAll_u, glac)
+    # uncomment to write to file
+    #writetofile(prbsAll_u, glac)
 
 
 def writetofile(dat, gl):

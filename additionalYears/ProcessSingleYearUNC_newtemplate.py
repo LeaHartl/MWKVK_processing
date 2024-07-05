@@ -10,8 +10,11 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 
 def loadfiles(gl, yr):
-    path = 'outnew/'+yr+'_reprocess/'
-    annual = pd.read_csv(path + gl+'_MB_annual_'+yr+'.csv', delimiter=';', parse_dates=True, decimal=',')
+    path = '/Users/leahartl/Desktop/LTER/MWKVK_processing/outnew/'+yr+'_reprocess/'
+    if gl =='MWK':
+        annual = pd.read_csv(path + gl+'_MB_annual_LH_'+yr+'.csv', delimiter=';', parse_dates=True, decimal=',') #adjusted flags, MWK
+    if gl =='VK':
+        annual = pd.read_csv(path + gl+'_MB_annual_'+yr+'.csv', delimiter=';', parse_dates=True, decimal=',')
     inter = pd.read_csv(path + gl+'_MB_intermediate_'+yr+'.csv', delimiter=';', parse_dates=True, decimal=',')
     probe = pd.read_csv(path + gl+'_MB_probing_'+yr+'.csv', delimiter=';', parse_dates=True, decimal=',')
     winter = pd.read_csv(path + gl+'_MB_winter_'+yr+'.csv', delimiter=';', parse_dates=True, decimal=',')
@@ -40,14 +43,17 @@ def loadfiles(gl, yr):
     'MB raw [cm] (raw mass balance measurement)': 'mb_raw'
     }
 
+
+    inv_map = {v: k for k, v in coldict.items()}
+
     annual_rn = annual.rename(mapper=coldict, axis=1)
     
 
     # mit MSW klären: density quality flag
-    # print(annual_rn[['density','density_quality', 'density_error', 'mb_we']].head())
+    print(annual_rn[['density','density_quality', 'density_error', 'mb_we']].head())
 
-    # annual_rn_u = unc.uncertainties(annual_rn, 'annual')
-    # print(annual_rn[['density','density_quality', 'density_error', 'mb_we']].head())
+    annual_rn_u = unc.uncertainties(annual_rn, 'annual')
+    print(annual_rn[['density','density_quality', 'density_error', 'mb_we']].head(18))
 
 
     inter_rn = inter.rename(mapper=coldict, axis=1)
@@ -67,9 +73,18 @@ def loadfiles(gl, yr):
 
     print(probe_rn[['density','density_quality', 'density_error', 'mb_we']].head())
     print(probe_rn_u[['density','density_quality', 'density_error', 'mb_we']].head())
+
+
+    annual_rn_u.drop(columns=['time0', 'time1'], inplace=True)
+    inter_rn_u.drop(columns=['time0', 'time1'], inplace=True)
+    winter_rn_u.drop(columns=['time0', 'time1'], inplace=True)
+    probe_rn_u.drop(columns=['time0', 'time1'], inplace=True)
     
     
-    stop
+    annual_rn_u.rename(mapper=inv_map, axis=1).to_csv('MWK_MB_annual_2023_2.csv', index=False)
+    inter_rn_u.rename(mapper=inv_map, axis=1).to_csv('MWK_MB_inter_2023_2.csv', index=False)
+    winter_rn_u.rename(mapper=inv_map, axis=1).to_csv('MWK_MB_winter_2023_2.csv', index=False)
+    probe_rn_u.rename(mapper=inv_map, axis=1).to_csv('MWK_MB_probe_2023_2.csv', index=False)
 
 
 

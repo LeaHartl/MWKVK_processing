@@ -64,14 +64,14 @@ month_T_MWK = AWSplots.timeseriesplot(MWK_proc, 'MWK')
 month_T_VK = AWSplots.timeseriesplot(VK_proc, 'VK')
 
 # PDD plot:
-AWSplots.PDD(MWK_proc, VK_proc)
+# AWSplots.PDD(MWK_proc, VK_proc)
 
-# Wind rose plot:
-AWSplots.windplot(MWK_proc, VK_proc)
+# # Wind rose plot:
+# AWSplots.windplot(MWK_proc, VK_proc)
 
-# Plot to compare filtered and unfiltered snow data:
-AWSplots.SnowPlot(MWK_proc1, 'MWK')
-AWSplots.SnowPlot(VK_proc1, 'VK')
+# # Plot to compare filtered and unfiltered snow data:
+# AWSplots.SnowPlot(MWK_proc1, 'MWK')
+# AWSplots.SnowPlot(VK_proc1, 'VK')
 
 
 plt.show()

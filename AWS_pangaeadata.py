@@ -106,17 +106,17 @@ for flag in flagsVK:
     QC_VK.loc[(QC_VK[flag] != 0), flag[:-5]] = np.nan
 
 
-fig, ax = plt.subplots(1,1)
-ax.scatter(dataMWK.index, dataMWK.Dist_Cor)
-ax.scatter(dataVK.index, dataVK.Dist_Cor)
+# fig, ax = plt.subplots(1,1)
+# ax.scatter(dataMWK.index, dataMWK.Dist_Cor)
+# ax.scatter(dataVK.index, dataVK.Dist_Cor)
 
-plt.show()
-stop
+# plt.show()
+# stop
 
 
 # pass the data to the plotting functions:
-AWSplots.timeseriesplot(dataVK, 'VK')
-AWSplots.timeseriesplot(dataMWK, 'MWK')
+AWSplots.timeseriesplot(QC_VK, 'VK')
+AWSplots.timeseriesplot(QC_MWK, 'MWK')
 
 plt.show()
 stop

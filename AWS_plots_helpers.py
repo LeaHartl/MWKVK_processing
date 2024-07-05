@@ -121,6 +121,8 @@ def timeseriesplot(ds, st):
         ax[3].grid('both')
     
         ax[3].legend(loc='upper left')
+
+    ax[3].xaxis.set_minor_locator(mdates.MonthLocator())
     fig.savefig('figs/'+st+'_meteo.png', bbox_inches='tight', dpi=300)
     return(df_mnth_p)
 
