@@ -170,16 +170,24 @@ def MakeMapsSubplots(glac, df, df_p, an, winter, cmap, vmin, vmax, what):
         yrs = np.arange(2012, 2023)
         row = 4
         col = 3
+        f1 = 8
+        f2 = 6.9
     if glac == 'MWK':
         yrs = np.arange(2007, 2023)
         row = 4
         col = 4
+        f1 = 6.32
+        f2 = 8
 
-    fig, ax = plt.subplots(row, col, figsize=(8, 8), sharey=True, sharex=True)
+    fig, ax = plt.subplots(row, col, figsize=(f1, f2), sharey=True, sharex=True)
     ax = ax.flatten()
 
     for i, y in enumerate(yrs):#df['year'].values):
-        ax[i].set_title(str(y))
+        # ax[i].set_title(str(y))
+        if glac == 'VK':
+            ax[i].annotate(str(y), xy=(0.02, 0.1), xycoords='axes fraction', fontsize=11, fontweight='bold')
+        if glac == 'MWK':
+            ax[i].annotate(str(y), xy=(0.54, 0.9), xycoords='axes fraction', fontsize=11, fontweight='bold')
 
         f = df['fname'].loc[df['year']==y].values[0]
         shp = gpd.read_file(f)
@@ -246,8 +254,13 @@ def MakeMapsSubplots(glac, df, df_p, an, winter, cmap, vmin, vmax, what):
 
             shp.plot(ax=ax[i], column='Wert', alpha=1, cmap=cmap, legend=False, norm=norm_w)# zorder=i+1)
 
-            prb.plot(ax=ax[i], column='Wert', alpha=1, markersize=4, linewidth=0.1, edgecolor='k',
-                     cmap=cmap, legend=False, norm=norm_w)# zorder=i+1)
+            if glac == 'VK':
+                prb.plot(ax=ax[i], column='Wert', alpha=1, markersize=12, linewidth=0.2, edgecolor='red',
+                        cmap=cmap, legend=False, norm=norm_w)# zorder=i+1)
+
+            if glac == 'MWK':
+                prb.plot(ax=ax[i], column='Wert', alpha=1, markersize=14, linewidth=0.2, edgecolor='red',
+                        cmap=cmap, legend=False, norm=norm_w)# zorder=i+1)
 
             win.plot(ax=ax[i], column='mb_we', alpha=1, edgecolor='k', linewidth=0.5, marker='s',
                      cmap=cmap, legend=False, zorder=10, norm=norm_w)
@@ -257,42 +270,64 @@ def MakeMapsSubplots(glac, df, df_p, an, winter, cmap, vmin, vmax, what):
             sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm_w)
             cbar = fig.colorbar(sm, cax=cbar_ax)
             cbar.set_label('Winter mass balance (mm w.e.)')
+        
 
-        for a in ax:
-            if glac == 'VK':
-                a.set_xticks([-75000, -77000])
-                a.set_yticks([220000, 221000])
-                a.set_ylim([219500, 222000])
-                a.set_xlim([-77500, -74100])
-                a.tick_params(axis='both', labelsize=10)
+    patch_prb = Line2D([0], [0], marker='o', linestyle = 'None', label='Probe points', color='r', markersize=6, markerfacecolor='None')
+    patch_pit = Line2D([0], [0], marker='s', linestyle = 'None', label='Snow pits', color='k', markersize=8, markerfacecolor='None')
+    patch_stk = Line2D([0], [0], marker='o', linestyle = 'None', label='Stakes', color='k', markersize=8, markerfacecolor='None')
 
-            if glac == 'MWK':
-                a.set_xticks([-72000, -73000])
-                a.set_ylim([215300, 218100])
-                a.set_xlim([-73400, -71450])
-                a.tick_params(axis='both', labelsize=8)
+    handlesAnnual = [patch_stk, patch_pit]
+    handlesWinter = [patch_pit, patch_prb]
 
-        if glac == 'MWK':   
-            ax[-4].set_xlabel('meters')
-            ax[-3].set_xlabel('meters')
-            ax[-2].set_xlabel('meters')
-            ax[-1].set_xlabel('meters')
-            ax[0].set_ylabel('meters')
-            ax[4].set_ylabel('meters')
-            ax[8].set_ylabel('meters')
-            ax[12].set_ylabel('meters')
+    for a in ax:
 
-        if glac == 'VK':   
-            ax[9].set_xlabel('meters')
-            ax[10].set_xlabel('meters')
-            ax[0].set_ylabel('meters')
-            ax[3].set_ylabel('meters')
-            ax[6].set_ylabel('meters')
-            ax[9].set_ylabel('meters')
-                
         if glac == 'VK':
-            ax[-1].set_axis_off()
+            a.set_xticks([-75000, -77000])
+            a.set_yticks([220000, 221000])
+            a.set_ylim([219500, 222000])
+            a.set_xlim([-77500, -74100])
+            a.tick_params(axis='both', labelsize=10, direction='in')
 
+        if glac == 'MWK':
+            a.set_xticks([-72000, -73000])
+            a.set_ylim([215300, 218100])
+            a.set_xlim([-73400, -71450])
+            a.tick_params(axis='both', labelsize=8, direction='in')
+
+    if glac == 'MWK':   
+        ax[-4].set_xlabel('meters')
+        ax[-3].set_xlabel('meters')
+        ax[-2].set_xlabel('meters')
+        ax[-1].set_xlabel('meters')
+        ax[0].set_ylabel('meters')
+        ax[4].set_ylabel('meters')
+        ax[8].set_ylabel('meters')
+        ax[12].set_ylabel('meters')
+        if what == 'annual':
+            fig.legend(handles=handlesAnnual, ncol=2, loc='center', bbox_to_anchor=[0.5, 0.9])
+        if what == 'winter':
+            fig.legend(handles=handlesWinter, ncol=2, loc='center', bbox_to_anchor=[0.5, 0.9])
+            
+            
+ 
+
+    if glac == 'VK':   
+        ax[9].set_xlabel('meters')
+        ax[10].set_xlabel('meters')
+        ax[0].set_ylabel('meters')
+        ax[3].set_ylabel('meters')
+        ax[6].set_ylabel('meters')
+        ax[9].set_ylabel('meters')
+        ax[-1].set_axis_off()
+        if what == 'annual':
+            fig.legend(handles=handlesAnnual, loc='center',bbox_to_anchor=[0.7, 0.2])
+        if what == 'winter':
+            fig.legend(handles=handlesWinter, loc='center',bbox_to_anchor=[0.7, 0.2])
+            
+            
+ 
+
+    plt.subplots_adjust(wspace=0.0, hspace=0.0)
     fig.savefig('figs/'+glac+'_'+what+'_maps_subplots.png', dpi=200, bbox_inches='tight')
     print('fig saved')
 
@@ -372,28 +407,28 @@ def loadShapes(glac, an, winter):
 
     MakeMapsSubplots(glac, df_Winter, df_Winter_p, an, winter, cmap_w, vmin_w, vmax_w,  'winter')
 
-    prbAnnual = ProcessProbes(glac, df_Annual, df_Annual_p, an, winter, 'annual')
-    prbWinter = ProcessProbes(glac, df_Winter, df_Winter_p, an, winter, 'winter')
+    # prbAnnual = ProcessProbes(glac, df_Annual, df_Annual_p, an, winter, 'annual')
+    # prbWinter = ProcessProbes(glac, df_Winter, df_Winter_p, an, winter, 'winter')
 
-    prbsAll = pd.concat([prbAnnual, prbWinter])
+    # prbsAll = pd.concat([prbAnnual, prbWinter])
 
 
-    prbsAll['date_quality'] = 3 # start date unknown, end date exactly known (fixed date probing)
-    prbsAll['measurement_quality'] = 5 # 5 is for "reconstructed value (other reason)" to indicate extrapolation to fixed date
-    prbsAll['measurement_type'] = 3 # glamos uses 2 (same as for snow pits). using 3 as a different category for our data set.
-    prbsAll['density_quality'] = 3 # Density of snow/firn estimated from nearby measurements, uncertainty 8%
+    # prbsAll['date_quality'] = 3 # start date unknown, end date exactly known (fixed date probing)
+    # prbsAll['measurement_quality'] = 5 # 5 is for "reconstructed value (other reason)" to indicate extrapolation to fixed date
+    # prbsAll['measurement_type'] = 3 # glamos uses 2 (same as for snow pits). using 3 as a different category for our data set.
+    # prbsAll['density_quality'] = 3 # Density of snow/firn estimated from nearby measurements, uncertainty 8%
 
-    prbsAll['mb_error'] = np.nan # initialize column - this is filled in a later step in Uncertainties.py
-    prbsAll['reading_error'] = np.nan # # initialize column - this is filled in a later step in Uncertainties.py
-    prbsAll['density_error'] = np.nan # # initialize column - this is filled in a later step in Uncertainties.py
-    prbsAll = prbsAll.rename(columns={"X": "x_pos"})
-    prbsAll = prbsAll.rename(columns={"Y": "y_pos"})
+    # prbsAll['mb_error'] = np.nan # initialize column - this is filled in a later step in Uncertainties.py
+    # prbsAll['reading_error'] = np.nan # # initialize column - this is filled in a later step in Uncertainties.py
+    # prbsAll['density_error'] = np.nan # # initialize column - this is filled in a later step in Uncertainties.py
+    # prbsAll = prbsAll.rename(columns={"X": "x_pos"})
+    # prbsAll = prbsAll.rename(columns={"Y": "y_pos"})
 
-    if glac=='VK':
-        prbsAll['source'] = 'BS'
-    if glac=='MWK':
-        prbsAll['source'] = 'MSW'
-    # probes with uncertainties:
+    # if glac=='VK':
+    #     prbsAll['source'] = 'BS'
+    # if glac=='MWK':
+    #     prbsAll['source'] = 'MSW'
+    # # probes with uncertainties:
     #prbsAll_u = unc.uncertainties(prbsAll, 'probe')
 
     # prbsAll_u.to_csv(glac+'/'+glac+'_probeData1.csv')
@@ -442,6 +477,6 @@ winter = pd.concat(winter)
 
 
 # run all the subroutines
-loadShapes('VK', an, winter)
+# loadShapes('VK', an, winter)
 loadShapes('MWK', an, winter)
 

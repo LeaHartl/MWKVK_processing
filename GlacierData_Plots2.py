@@ -226,6 +226,8 @@ def ElevZones_v2(gl):
     for a in ax:
         a.set_xlim(xl)
         a.set_ylim(yl)
+        a.set_xticks([-6000, -4000, -2000, 0, 2000])
+        a.set_xticklabels(['', '-4000', '-2000', '0', '2000'])
 
     if gl == 'MWK':
         ax[0].set_ylabel('elevation (m)')
@@ -258,7 +260,8 @@ def ElevZones_v2(gl):
         ax[i].barh(tmp.elev, tmp['baZ [kg/m**2]'], align='center', height=50, color='silver', alpha=0.8)
         ax[i].vlines(0, 2400, 3500, colors='k')
         
-        ax[i].set_title(str(yr))
+        # ax[i].set_title(str(yr))
+        ax[i].annotate(str(yr), xy=(0.1, 0.9), xycoords='axes fraction', color='k', fontweight='bold')
         ax[i].grid(axis='both', which='both', zorder=1)
 
         tmp2 = readFiles_massbalance(gl, yr)
@@ -286,6 +289,7 @@ def ElevZones_v2(gl):
     handles = ([patch, patch_w, patch_s, line])
 
     fig.legend(handles=handles, loc='center right', bbox_to_anchor=(1.05, 0.5))
+    plt.subplots_adjust(wspace=0.04, hspace=0.04)
     fig.savefig('figs/elevationzones_'+gl+'.png', bbox_inches='tight', dpi=300)
 
 

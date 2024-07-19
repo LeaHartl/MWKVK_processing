@@ -8,6 +8,7 @@ from matplotlib.colors import ListedColormap
 import matplotlib.dates as mdates
 from matplotlib.lines import Line2D
 import matplotlib.patches as mpatches
+from matplotlib.patches import Rectangle
 import matplotlib.colors as mcolors
 from shapely.geometry import Point
 import glob
@@ -212,6 +213,17 @@ def overview():
                zoom=15 #15
               )
 
+    summit = pd.DataFrame(
+            {
+                "st": ["summit"],
+                "Latitude": [47.109147],
+                "Longitude": [12.346467],
+            })
+    summit_gdf = gpd.GeoDataFrame(summit, geometry=gpd.points_from_xy(summit.Longitude, summit.Latitude), crs="EPSG:4326"
+    )
+    summit_gdf = summit_gdf.to_crs(epsg=crsAT)
+    summit_gdf.plot(ax=ax, alpha=1, color='k', marker='x', markersize=60)
+
     # ax.annotate('VK', xy=(12.33, 47.125), color='k', fontweight='bold')
     # ax.annotate('MWK', xy=(12.375, 47.085), color='k', fontweight='bold')
 
@@ -223,10 +235,15 @@ def overview():
     ax.annotate('MWK', xy=(-72500, 216900), color='k', fontweight='bold')
 
     ax.annotate('SK', xy=(-76400, 219500), color='k', fontweight='bold')
-    ax.annotate('G (3657 m)', xy=(-75000, 219000), color='k', fontweight='bold')
 
-    ax.annotate('3002 m', xy=(-79000, 221450), color='r', fontweight='bold')
-    ax.annotate('2978 m', xy=(-75000, 215900), color='r', fontweight='bold')
+    ax.annotate('G', xy=(-74600, 219100), color='k', fontweight='bold')
+    ax.annotate('3657 m', xy=(-74600, 218700), color='k', fontweight='bold')
+
+    ax.annotate('AWS_VK', xy=(-79500, 221450), color='k', fontweight='bold')
+    ax.annotate('AWS_MWK', xy=(-75600, 215850), color='k', fontweight='bold')
+
+    ax.annotate('3002 m', xy=(-79500, 220900), color='k', fontweight='bold')
+    ax.annotate('2978 m', xy=(-75600, 215300), color='k', fontweight='bold')
 
     axins2 = ax.inset_axes([0.02, 0.7, 0.4, 0.5])
     countries.plot(ax=axins2, alpha=1, edgecolor="k", facecolor='none')
@@ -265,6 +282,7 @@ def overview():
 # FIG 2, FIG 3 - load and plot all available glacier outlines and locations of annual point MB measurements. 
 # makes one plot per glacier.
 def getOutlines2(glac, an):
+    crsAT = 31255
 
     stations = pd.DataFrame(
             {
@@ -284,7 +302,7 @@ def getOutlines2(glac, an):
     df = pd.DataFrame(columns=['fname', 'year'])
     df['fname'] = fls
 
-    fig, ax = plt.subplots(1, 1, figsize=(8, 8), sharey=True, sharex=True)
+    fig, ax = plt.subplots(1, 1, figsize=(10, 8), sharey=True, sharex=True)
 
     if glac == 'VK':
         dem_f = 'misc/DEM2012_VK.tif'
@@ -300,7 +318,7 @@ def getOutlines2(glac, an):
         df['year'] = df['fname'].str[-8:-4]
         df['year'] = df['year'].astype(int)
 
-        clrs = cm.plasma_r(np.linspace(0.7, 0.9, len(fls)))
+        clrs = cm.plasma_r(np.linspace(0, 0.9, len(fls)))
         ax.set_ylim([219100, 222000])
         ax.set_xlim([-77900, -74450])
 
@@ -315,7 +333,10 @@ def getOutlines2(glac, an):
         yrs = np.arange(2007, 2023)
         df['year'] = df['fname'].str[17:-4]
         df['year'].replace('LIA', '1850', inplace=True)
-        df['year'] = df['year'].astype(int)
+        df['year'].replace('4_15', '2015a', inplace=True)
+        df['year'] = df['year']#.astype(int)
+        df.sort_values('year', inplace=True)
+        print(df)
         clrs = cm.plasma_r(np.linspace(0, 0.9, len(fls)))
         ax.set_ylim([215000, 218100])
         ax.set_xlim([-75000, -71400])
@@ -325,40 +346,46 @@ def getOutlines2(glac, an):
     df.sort_values(by=['year'], inplace=True)
 
     clrs2 = cm.viridis(np.linspace(0, 0.9, len(yrs+1)))
-    lns = []
+    gl_lns = []
+    patch_none = Line2D([0], [0], marker='', linestyle = 'None', label='Glacier outlines:')
+    gl_lns.append(patch_none)
     pts = []
+    lns = []
 
-    glGI3 = gpd.read_file('misc/GI3/Venedigergruppe.shp')
+    # glGI3 = gpd.read_file('misc/GI3/Venedigergruppe.shp')
 
-    glGI2 = gpd.read_file('misc/GI2/AGI_newdate.shp')
+    # glGI2 = gpd.read_file('misc/GI2/AGI_newdate.shp')
 
-    glGI1 = gpd.read_file('misc/GI2/AGI_1969.shp')
+    # glGI1 = gpd.read_file('misc/GI2/AGI_1969.shp')
 
-    glGI2.to_crs(glGI3.crs, inplace=True)
-    glGI1.to_crs(glGI3.crs, inplace=True)
+    # glGI2.to_crs(glGI3.crs, inplace=True)
+    # glGI1.to_crs(glGI3.crs, inplace=True)
 
 
-    glGI1.boundary.plot(ax=ax, alpha=1, color='k', linewidth=0.5, linestyle=':')
-    lnGI1 = Line2D([0], [0], label='GI 1 (1969)', color='k', linewidth=0.5, linestyle=':')
-    lns.append(lnGI1)
+    # glGI1.boundary.plot(ax=ax, alpha=1, color='k', linewidth=0.5, linestyle=':')
+    # lnGI1 = Line2D([0], [0], label='1969', color='k', linewidth=0.5, linestyle=':')
+    # gl_lns.append(lnGI1)
 
-    glGI2.boundary.plot(ax=ax, alpha=1, color='k', linewidth=0.5, linestyle='-.')
-    lnGI2 = Line2D([0], [0], label='GI 2 (1998)', color='k', linewidth=0.5, linestyle='-.')
-    lns.append(lnGI2)
+    # glGI2.boundary.plot(ax=ax, alpha=1, color='k', linewidth=0.5, linestyle='-.')
+    # lnGI2 = Line2D([0], [0], label='1998', color='k', linewidth=0.5, linestyle='-.')
+    # gl_lns.append(lnGI2)
 
-    glGI3.boundary.plot(ax=ax, alpha=1, color='k', linewidth=0.5, linestyle='--')
-    lnGI3 = Line2D([0], [0], label='GI 3 (2009)', color='k', linewidth=0.5, linestyle='--')
-    lns.append(lnGI3)
-
-    patch1 = Line2D([0], [0], marker='*', linestyle = 'None', label='AWS', color='r', markersize=8)
-    lns.append(patch1)
+    # glGI3.boundary.plot(ax=ax, alpha=1, color='k', linewidth=0.5, linestyle='--')
+    # lnGI3 = Line2D([0], [0], label='2009', color='k', linewidth=0.5, linestyle='--')
+    # gl_lns.append(lnGI3)
 
     for i, f in enumerate(df['fname'].values):
         shp = gpd.read_file(f)
-        shp.boundary.plot(ax=ax, alpha=1, color=clrs[i], zorder=i+1)
-        # create manual symbols for legend
-        ln = Line2D([0], [0], label=df['year'].values[i], color=clrs[i], linewidth=1)
-        lns.append(ln)
+        shp.to_crs(epsg=crsAT, inplace=True)
+        
+        if ((glac=='VK') & (df['year'].values[i]==2015)) | (df['year'].values[i]=='2015a'):
+            shp.boundary.plot(ax=ax, alpha=1, color=clrs[i], zorder=i+1, linestyle='--')
+            ln = Line2D([0], [0], label=df['year'].values[i], color=clrs[i], linewidth=1, linestyle='--')
+        else:
+            shp.boundary.plot(ax=ax, alpha=1, color=clrs[i], zorder=i+1)
+            # create manual symbols for legend
+            ln = Line2D([0], [0], label=df['year'].values[i], color=clrs[i], linewidth=1)
+        gl_lns.append(ln)
 
     # plot stakes
     for j, y in enumerate(yrs):
@@ -371,20 +398,54 @@ def getOutlines2(glac, an):
         tm = an.loc[(pd.to_datetime(an['date1']).dt.year ==2020)]
         tmsub = tm.loc[tm.name=='11']
         tmsub.plot(ax=ax, color='k', marker='o', markersize=320, edgecolor='k', facecolor='None', zorder=10+1)
+        ax.annotate('Stake 11', xy=(tmsub.geometry.x.values[0]-150, tmsub.geometry.y.values[0]+110),
+             xycoords='data',
+             bbox=dict(fc='lightgrey', lw=0.1, pad=1, edgecolor='k')
+             # xytext=(tmsub.geometry.x.values[0]-150, tmsub.geometry.y.values[0]+180),
+             # textcoords='data',
+             # arrowprops=dict(
+             #                 color='k',
+             #                 lw=2,
+             #                 ls='-')
+           )
 
     if glac=='VK':
         tmLow = an.loc[(pd.to_datetime(an['date1']).dt.year >=2021)]
         tmsubLow = tmLow.loc[(tmLow.name =='VEK-6') | (tmLow.name =='95')] 
-        tmsubLow.plot(ax=ax, color='k', marker='o', markersize=320, edgecolor='k', facecolor='None', zorder=10+1)
+        # tmsubLow.plot(ax=ax, color='k', marker='o', markersize=320, edgecolor='k', facecolor='None', zorder=10+1)
        
         tm2 = an.loc[(pd.to_datetime(an['date1']).dt.year <=2018)]
         #tmsub = tm.loc[(tm.name=='VEK-18') | (tm.name=='VEK-6') | (tm.name=='100') | (tm.name=='95') ] 
         tmsub = tm2.loc[tm2.name=='100'] 
-        tmsub.plot(ax=ax, color='k', marker='o', markersize=320, edgecolor='k', facecolor='None', zorder=10+1)
+        # tmsub.plot(ax=ax, color='k', marker='o', markersize=320, edgecolor='k', facecolor='None', zorder=10+1)
         
         tm22 = an.loc[(pd.to_datetime(an['date1']).dt.year >2018)]
         tmsub2 = tm22.loc[(tm22.name=='100alt') | (tm22.name=='VEK-24')]
-        tmsub2.plot(ax=ax, color='k', marker='o', markersize=320, edgecolor='k', facecolor='None', zorder=10+1)
+        # tmsub2.plot(ax=ax, color='k', marker='o', markersize=320, edgecolor='k', facecolor='None', zorder=10+1)
+
+        ax.annotate('Stake 95/VEK-6', xy=(tmsubLow.geometry.x.values[0]-60, tmsubLow.geometry.y.values[0]+70),
+             xycoords='data',
+             xytext=(tmsubLow.geometry.x.values[0]-800, tmsubLow.geometry.y.values[0]+300),
+             textcoords='data',
+             zorder=100,
+             arrowprops=dict(
+                             color='k',
+                             lw=0.1,
+                             ls='-'),
+            bbox=dict(fc='lightgrey', lw=0.1, pad=1, edgecolor='k')
+           )
+        ax.annotate('Stake 100/VEK-24', xy=(tmsub2.geometry.x.values[1]+80, tmsub2.geometry.y.values[1]+120),
+             xycoords='data',
+             xytext=(tmsub2.geometry.x.values[1]+220, tmsub2.geometry.y.values[1]+400),
+             textcoords='data',
+             zorder=100,
+             arrowprops=dict(
+                             color='k',
+                             lw=0.1,
+                             ls='-'),
+             bbox=dict(fc='lightgrey', lw=0.1, pad=1, edgecolor='k')
+           )
+
     # plot pits
     for j, y in enumerate(yrs):
         tm = an.loc[(pd.to_datetime(an['date1']).dt.year ==y) & (an.glacier==glac) & (an.measurement_type == 2)]
@@ -394,12 +455,87 @@ def getOutlines2(glac, an):
     ax.grid('both')
 
     # add manual symbols to auto legend
-    handles = (lns)
+    # ph = [plt.plot([],marker="", ls="", label='Glacier outlines:')[0]]*2
+    
+    handles = (gl_lns)
+    # labels=['a', 'b', 'c', 'd']
+
+    patch_none_2 = Line2D([0], [0], marker='', linestyle = 'None', label='Point measurements:')
+
+    stk = Line2D([0], [0], marker='o', linestyle = 'None', label='Stakes', color='k', markersize=4)
+    pit = Line2D([0], [0], marker='s', linestyle = 'None', label='Snow pits', color='k', markersize=4)
+    pt_l = [patch_none_2, stk, pit]
+    
+
+    outlines_leg = plt.legend(handles=handles, loc='upper left', bbox_to_anchor=(1.01, 0.8), ncol=1,frameon=False)
+
+    plt.subplots_adjust(right=0.7)
 
     if glac == 'VK':
-        fig.legend(handles=handles, loc='upper left', bbox_to_anchor=(0.8, 0.9), ncol=2)
+        # fig.legend(handles=handles, loc='upper left', bbox_to_anchor=(1.01, 0.5), ncol=1)
+
+        patch1 = Line2D([0], [0], marker='*', linestyle = 'None', label='AWS_VK', color='r', markersize=8)
+        aws_leg = plt.legend(handles=[patch1], loc='upper left', bbox_to_anchor=(1.01, 0.86), ncol=1,frameon=False)
+        pts_leg = plt.legend(handles=pt_l, loc='upper left', bbox_to_anchor=(1.01, 0.44), ncol=1, frameon=False)
+        ax.add_artist(aws_leg)
+        ax.add_artist(outlines_leg)
+        ax.add_artist(pts_leg)
+
+        for vpack in outlines_leg._legend_handle_box.get_children():
+            for hpack in vpack.get_children()[:1]:
+                hpack.get_children()[0].set_width(0)
+
+        for vpack in pts_leg._legend_handle_box.get_children():
+            for hpack in vpack.get_children()[:1]:
+                hpack.get_children()[0].set_width(0)
+
+        cmap = mcolors.LinearSegmentedColormap.from_list('cmap', clrs2, N=256, gamma=1.0)
+        bounds = np.arange(2012, 2023)
+        norm = mcolors.BoundaryNorm(bounds, cmap.N)
+        # clrs2 = cm.viridis(np.linspace(0, 0.9, len(yrs+1)))
+        scalarMap = cm.ScalarMappable(norm=norm, cmap=cmap)
+        scalarMap.set_array([])
+
+
+        cax = fig.add_axes([0.75, 0.32, 0.1, 0.03])
+
+        plt.colorbar(scalarMap, cax = cax, ticks=[2012, 2022],
+                                            orientation='horizontal')
+        cax.tick_params(axis=u'both', which=u'both', length=0)
+
+
+
     if glac == 'MWK':
-        fig.legend(handles=handles, loc='upper left', bbox_to_anchor=(0.1, 0.4), ncol=2)
+        
+        patch1 = Line2D([0], [0], marker='*', linestyle = 'None', label='AWS_MWK', color='r', markersize=8)
+        aws_leg = plt.legend(handles=[patch1], loc='upper left', bbox_to_anchor=(1.01, 0.88), ncol=1, frameon=False)
+        pts_leg = plt.legend(handles=pt_l, loc='upper left', bbox_to_anchor=(1.01, 0.4), ncol=1, frameon=False)
+        ax.add_artist(aws_leg)
+        ax.add_artist(outlines_leg)
+        ax.add_artist(pts_leg)
+
+        for vpack in outlines_leg._legend_handle_box.get_children():
+            for hpack in vpack.get_children()[:1]:
+                hpack.get_children()[0].set_width(0)
+
+        for vpack in pts_leg._legend_handle_box.get_children():
+            for hpack in vpack.get_children()[:1]:
+                hpack.get_children()[0].set_width(0)
+
+        cmap = mcolors.LinearSegmentedColormap.from_list('cmap', clrs2, N=256, gamma=1.0)
+        bounds = np.arange(2007, 2023)
+        norm = mcolors.BoundaryNorm(bounds, cmap.N)
+        # clrs2 = cm.viridis(np.linspace(0, 0.9, len(yrs+1)))
+        scalarMap = cm.ScalarMappable(norm=norm, cmap=cmap)
+        scalarMap.set_array([])
+
+        cax = fig.add_axes([0.75, 0.3, 0.1, 0.03])
+
+        plt.colorbar(scalarMap, cax = cax, ticks=[2007, 2022],
+                                            orientation='horizontal')
+        cax.tick_params(axis=u'both', which=u'both', length=0)
+
+
 
     fig.savefig('figs/'+glac+'_outlines_and_annualdata.png', dpi=200, bbox_inches='tight')
 
@@ -584,8 +720,8 @@ def intermediate_stats_combined(gdf, an, winter):
     ax['c)'].set_title('Mass balance error')
 
     ax['a)'].annotate('a)', xy=(0.025, 0.9), xycoords='axes fraction', color='k', fontweight='bold', fontsize=18)
-    ax['a)'].annotate('April 30', xy=(120, 3200), color='k', fontweight='bold', fontsize=12)
-    ax['a)'].annotate('September 30', xy=(273, 3200), color='k', fontweight='bold', fontsize=12)
+    ax['a)'].annotate('April 30', xy=(0.05, 1.02), xycoords='axes fraction', color='k', fontweight='bold', fontsize=11)
+    ax['a)'].annotate('September 30', xy=(0.82, 1.02), xycoords='axes fraction', color='k', fontweight='bold', fontsize=11)
 
     ax['b)'].annotate('b)', xy=(0.1, 0.9), xycoords='axes fraction', color='k', fontweight='bold', fontsize=18)
     ax['c)'].annotate('c)', xy=(0.1, 0.9), xycoords='axes fraction', color='k', fontweight='bold', fontsize=18)
@@ -629,7 +765,7 @@ def plot_intermediate(gdf):
         if (y <= 2018) & (y != 2016):
             highVK = tmp.loc[(tmp['name'] == '100') & (tmp.glacier=='VK')]
         if y == 2016:
-            highVK = tmp.loc[(tmp['name'] == 'nope')]
+            highVK = tmp.loc[(tmp['name'] == 'nope')] # exclude this year, elevation appears uncertain/stake not found?
         if y > 2018:
             highVK= tmp.loc[((tmp['name'] == '100alt') | (tmp['name'] == 'VEK-24') )& (tmp.glacier=='VK')]
 
@@ -669,8 +805,8 @@ def plot_intermediate(gdf):
     ax[2].set_xlabel('day of year')
 
     ax[0].annotate('a)', xy=(0.02, 0.9), xycoords='axes fraction', color='k', fontweight='bold', fontsize=10)
-    ax[0].annotate('July 1', xy=(178, 32), color='k', fontweight='bold', fontsize=12)
-    ax[0].annotate('September 30', xy=(264, 32), color='k', fontweight='bold', fontsize=12)
+    ax[0].annotate('July 1', xy=(0.14, 1.04), xycoords='axes fraction', color='k', fontweight='bold', fontsize=11)
+    ax[0].annotate('September 30', xy=(0.76, 1.04), xycoords='axes fraction', color='k', fontweight='bold', fontsize=11)
 
     ax[1].annotate('b)', xy=(0.02, 0.9), xycoords='axes fraction', color='k', fontweight='bold', fontsize=10)
     ax[2].annotate('c)', xy=(0.02, 0.9), xycoords='axes fraction', color='k', fontweight='bold', fontsize=10)
@@ -887,7 +1023,7 @@ def plotDensity(winter):
 #overview()
 
 # # FIG 2, FIG 3 - all available outlines and location of annual point balance measurements, colored by years
-# getOutlines2('MWK', an)
+getOutlines2('MWK', an)
 getOutlines2('VK', an)
 
 # # FIG 4 - three subplots showing intermediate data and uncertainties)
@@ -896,10 +1032,10 @@ getOutlines2('VK', an)
 #
 
 # FIG 5 - plot subseasonal intermediate cumulative stake data for 3 stakes (3 subplots)
-plot_intermediate(inter)
+# plot_intermediate(inter)
 
 # # # FIG 6 - annual and winter point mb vs elevation:
-# # plot_annual_seasonal_elevation(winter, an, probesVK, probesMWK)
+#plot_annual_seasonal_elevation(winter, an, probesVK, probesMWK)
 
 # additional plots to answer reviewer questions:
 # plot_intermediate_rate(inter)
