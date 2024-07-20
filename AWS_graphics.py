@@ -18,8 +18,6 @@ def loadFiles(gl):
 
 # load the files produced in AWS_processing.py:
 MWK_raw, MWK_proc1 = loadFiles('MWK')
-print(MWK_raw.head())
-print(MWK_proc1.head())
 VK_raw, VK_proc1 = loadFiles('VK')
 
 MWK_proc = MWK_proc1.copy()
@@ -60,8 +58,8 @@ for flag in flagsVK:
 # make plots:
 
 # time series of station POR:
-month_T_MWK = AWSplots.timeseriesplot(MWK_proc, 'MWK')
-month_T_VK = AWSplots.timeseriesplot(VK_proc, 'VK')
+# month_T_MWK = AWSplots.timeseriesplot(MWK_proc, 'MWK')
+# month_T_VK = AWSplots.timeseriesplot(VK_proc, 'VK')
 
 # PDD plot:
 # AWSplots.PDD(MWK_proc, VK_proc)
@@ -70,8 +68,8 @@ month_T_VK = AWSplots.timeseriesplot(VK_proc, 'VK')
 # AWSplots.windplot(MWK_proc, VK_proc)
 
 # # Plot to compare filtered and unfiltered snow data:
-# AWSplots.SnowPlot(MWK_proc1, 'MWK')
-# AWSplots.SnowPlot(VK_proc1, 'VK')
+AWSplots.SnowPlot(MWK_proc1,'MWK')
+AWSplots.SnowPlot(VK_proc1, 'VK')
 
 
 plt.show()

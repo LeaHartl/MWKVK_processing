@@ -228,6 +228,8 @@ def PDD(df1, df2):
 
 def SnowPlot(ds_QUA, gl):
     fig, ax = plt.subplots(1, 1, figsize=(12,6))
+
+    print(ds_QUA.Snow.head())
     ax.scatter(ds_QUA.index, ds_QUA.Snow, s=2, color='k', label='no filter')
 
     clean = ds_QUA.loc[ds_QUA.Snow_flag==0]
@@ -240,7 +242,7 @@ def SnowPlot(ds_QUA, gl):
     ax.set_ylabel('Snow height (m)')
     ax.legend(loc='upper right')
     ax.grid('both')
-    fig.savefig('figs/'+gl+'_snow.png')
+    # fig.savefig('figs/'+gl+'_snow.png')
 
 
 
