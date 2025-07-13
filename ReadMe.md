@@ -1,6 +1,6 @@
 # Code to process MWK and VK data files (glacier and meteo data)  
 
-This repo is related to glaciological and meteorological data from Mullwitzkees (MWK) and Venedigerkees (VK), two glaciers in the Hohe Tauern range of the Austrian Alps. New data is being added to existing publication series on the PANGAEA data platform and an accompanying publication has been submitted to Earth System Science Data (Copernicus publications).
+This repo is related to glaciological and meteorological data from Mullwitzkees (MWK) and Venedigerkees (VK), two glaciers in the Hohe Tauern range of the Austrian Alps. New data is being added to existing publication series on the PANGAEA data platform. An accompanying data description paper has been published in Earth System Science Data (Hartl et al, 2024).
 
 The scripts require the folowing directories to be present in the same directory as the .py files: "out", "figs", "AWS". Additional file paths to input data need to be set in the scripts, see comments therein.
 
@@ -62,11 +62,9 @@ Code used to do the initial formating and QC of the AWS data from AWS_VK and AWS
 Geibel, L., Huss, M., Kurzböck, C., Hodel, E., Bauder, A., and Farinotti, D. (2022) Rescue and homogenization of 140 years of glacier mass balance data in Switzerland, Earth System Science Data, 14, 3293–3312.     
 https://essd.copernicus.org/articles/14/3293/2022/essd-14-3293-2022.html    
 
-
+Hartl, L., Seiser, B., Stocker-Waldhuber, M., Baldo, A., Lauria, M. V., and Fischer, A.: Glaciological and meteorological monitoring at Long Term Ecological Research (LTER) sites Mullwitzkees and Venedigerkees, Austria, 2006–2022, Earth Syst. Sci. Data, 16, 4077–4101, https://doi.org/10.5194/essd-16-4077-2024, 2024.
 
 Seiser, B., Fischer, A. (2016): Glacier mass balances and elevation zones of Venedigerkees, Hohe Tauern, Austria, 2011/2012 et seq. Institut für Interdisziplinäre Gebirgsforschung der Österreichischen Akademie der Wissenschaften, Innsbruck, PANGAEA, https://doi.org/10.1594/PANGAEA.833232   
-
-
 
 Stocker-Waldhuber, M., Fischer, A., Kuhn, M. (2016): Glacier mass balances and elevation zones of Mullwitzkees, Hohe Tauern, Austria, 2006/2007 et seq. Institut für Interdisziplinäre Gebirgsforschung der Österreichischen Akademie der Wissenschaften, Innsbruck, PANGAEA, https://doi.org/10.1594/PANGAEA.806662   
 
